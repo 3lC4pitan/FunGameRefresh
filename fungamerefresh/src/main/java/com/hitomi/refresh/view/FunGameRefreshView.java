@@ -21,83 +21,82 @@ import android.widget.LinearLayout;
  */
 public class FunGameRefreshView extends LinearLayout implements View.OnTouchListener {
     /**
-     * 下拉状态
+     * Pull-down state
      */
     public static final int STATUS_PULL_TO_REFRESH = 0;
 
     /**
-     * 释放准备刷新状态
+     * Release to refresh state
      */
     public static final int STATUS_RELEASE_TO_REFRESH = 1;
 
     /**
-     * 正在刷新状态
+     * Refreshing state
      */
     public static final int STATUS_REFRESHING = 2;
 
     /**
-     * 释放后，又按住玩游戏状态
+     * Release and hold to play game state
      */
     public static final int STATUS_AGAIN_DOWN = 3;
 
     /**
-     * 刷新完成状态
+     * Refresh completed state
      */
     public static final int STATUS_REFRESH_FINISHED = 4;
 
     /**
-     * 下拉拖动的黏性比率
+     * Sticky ratio of pull-down drag
      */
     private static final float STICK_RATIO = .65f;
 
     /**
-     * 下拉刷新的回调接口
+     * Callback interface for pull-down refresh
      */
     private FunGameRefreshListener mListener;
 
     /**
-     * 下拉头的View
+     * Header view for pull-down
      */
     private FunGameHeader header;
 
     /**
-     * 需要去下拉刷新的 View
+     * View to be pulled down for refresh
      */
     private View contentView;
 
     /**
-     * 下拉控件布局参数
+     * Layout parameters of pull-down control
      */
     private MarginLayoutParams headerLayoutParams;
 
     /**
-     * 下拉控件高度
+     * Height of pull-down control
      */
     private int hideHeaderHeight;
 
     /**
-     * 当前状态
+     * Current status
      */
     private int currentStatus = STATUS_REFRESH_FINISHED;
-    ;
 
     /**
-     * 手指按下时屏幕纵坐标
+     * Screen vertical coordinate when finger is pressed down
      */
     private float preDownY;
 
     /**
-     * 用于控制onLayout中的初始化只需加载一次
+     * Used to control initialization in onLayout, loaded only once
      */
     private boolean once;
 
     /**
-     * 当前是否可以下拉
+     * Whether pulling down is currently possible
      */
     private boolean ableToPull;
 
     /**
-     * 刷新子线程任务是否执行完毕
+     * Whether the refresh thread task is completed
      */
     private boolean isExecComplete;
 
@@ -147,7 +146,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 preDownY = event.getRawY();
-                if (currentStatus == STATUS_REFRESHING) { //表示释放后处于刷新状态时候，又按住了
+                if (currentStatus == STATUS_REFRESHING) { // Indicates that when released, it is in the refreshing state, and then pressed again
                     currentStatus = STATUS_AGAIN_DOWN;
                     setHeaderTopMarign(0);
                 }
@@ -160,7 +159,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
                     return false;
                 }
 
-                if (headerLayoutParams.topMargin > 0) { // 头部全部被下拉出来的时候状态转换为释放刷新
+                if (headerLayoutParams.topMargin > 0) { // When the head is completely pulled out, the status is changed to release refresh
                     currentStatus = STATUS_RELEASE_TO_REFRESH;
                 }
 
@@ -170,7 +169,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
                     currentStatus = STATUS_PULL_TO_REFRESH;
                 }
 
-                // 通过偏移下拉头的topMargin值，来实现下拉效果
+                // Offset the topMargin value of the pull-down head to achieve the pull-down effect
                 setHeaderTopMarign((int) (offsetY + hideHeaderHeight));
 
                 break;
@@ -184,7 +183,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
                 break;
         }
         if (currentStatus == STATUS_PULL_TO_REFRESH || currentStatus == STATUS_RELEASE_TO_REFRESH) {
-            //让 contentView 失去焦点, 不可被点击
+            // Make contentView lose focus and unable to be clicked
             disableContentView();
             return true;
         }
@@ -192,7 +191,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
     }
 
     /**
-     * 给header设置topMargin参数
+     * Set topMargin parameter for header
      *
      * @param margin
      */
@@ -202,7 +201,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
     }
 
     /**
-     * 禁用 contentView，让其失去焦点不可接受点击
+     * Disable contentView, make it lose focus and not accept clicks
      */
     private void disableContentView() {
         contentView.setPressed(false);
@@ -211,7 +210,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
     }
 
     /**
-     * 处理手指第二次按住屏幕玩游戏的事件
+     * Handle the event of pressing the screen again to play the game
      *
      * @param event
      * @return
@@ -243,7 +242,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
     }
 
     /**
-     * 在onTouch中第一个执行，这样可以判断出当前应该是滚动 contentView，还是应该进行下拉。
+     * The first execution in onTouch, so that the current scroll should be to the contentView, or should be pulled down.
      *
      * @param event
      */
@@ -254,7 +253,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
                     preDownY = event.getRawY();
                 }
                 ableToPull = true;
-            } else { // 反之
+            } else { // Otherwise
                 if (headerLayoutParams.topMargin != hideHeaderHeight) {
                     setHeaderTopMarign(hideHeaderHeight);
                 }
@@ -281,16 +280,16 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
     }
 
     /**
-     * 给下拉刷新控件注册一个监听器。
+     * Register a listener for pull-down refresh control.
      *
-     * @param listener 监听器的实现。
+     * @param listener Implementation of the listener.
      */
     public void setOnRefreshListener(FunGameRefreshListener listener) {
         mListener = listener;
     }
 
     /**
-     * 当所有的刷新逻辑完成后，记录调用一下，否则将一直处于正在刷新状态。
+     * After all refresh logic is completed, call this method to record it, otherwise it will always be in the refreshing state.
      */
     public void finishRefreshing() {
         header.postComplete();
@@ -301,7 +300,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
     }
 
     /**
-     * 回滚到头部刷新控件的高度，并触发后台刷新任务
+     * Roll back to the height of the header refresh control and trigger the background refresh task
      */
     private void rollBack2Header(boolean isRefresh) {
         ValueAnimator rbToHeaderAnimator = ValueAnimator.ofInt(headerLayoutParams.topMargin, 0);
@@ -357,7 +356,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
 
 
     /**
-     * 回滚下拉刷新头部控件
+     * Roll back the pull-down refresh header control
      */
     private void rollbackHeader(boolean isDelay) {
         tempHeaderTopMargin = headerLayoutParams.topMargin;
@@ -389,7 +388,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
     }
 
     /**
-     * 设置加载开始文字
+     * Set loading start text
      *
      * @param loadingText
      */
@@ -399,7 +398,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
     }
 
     /**
-     * 设置加载结束文字
+     * Set loading end text
      *
      * @param loadingFinishedText
      */
@@ -410,7 +409,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
     }
 
     /**
-     * 设置游戏结束文字
+     * Set game over text
      *
      * @param gameOverText
      */
@@ -420,7 +419,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
     }
 
     /**
-     * 设置上边帷幕中的文字
+     * Set text in top curtain
      *
      * @param topMaskText
      */
@@ -430,7 +429,7 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
     }
 
     /**
-     * 设置下边帷幕中的文字
+     * Set text in bottom curtain
      *
      * @param bottomMaskText
      */
@@ -440,11 +439,11 @@ public class FunGameRefreshView extends LinearLayout implements View.OnTouchList
     }
 
     /**
-     * 下拉刷新的监听器，使用下拉刷新的地方应该注册此监听器来获取刷新回调。
+     * Listener for pull-down refresh, this listener should be registered to get the refresh callback where pull-down refresh is used.
      */
     public interface FunGameRefreshListener {
         /**
-         * 刷新时回调方法
+         * Callback method when refreshing
          */
         void onPullRefreshing();
 

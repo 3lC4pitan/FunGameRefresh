@@ -18,11 +18,11 @@ public class ListViewActivity extends BaseActivity {
     @Override
     public void initView() {
         refreshView = (FunGameRefreshView) findViewById(R.id.refresh_fun_game);
-        refreshView.setLoadingText("玩个游戏解解闷");
-        refreshView.setGameOverText("游戏结束");
-        refreshView.setLoadingFinishedText("加载完成");
-        refreshView.setTopMaskText("下拉刷新");
-        refreshView.setBottomMaskText("上下滑动控制游戏");
+        refreshView.setLoadingText("Play a game to relieve boredom");
+        refreshView.setGameOverText("game over");
+        refreshView.setLoadingFinishedText("Loading completed");
+        refreshView.setTopMaskText("Pull down to refresh");
+        refreshView.setBottomMaskText("Swipe up and down to control the game");
 
         listView = (ListView) findViewById(R.id.list_view);
     }

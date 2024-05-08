@@ -15,7 +15,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.hitomi.refresh.R;
 
-
 /**
  * Created by Hitomis on 2016/3/9.
  * email:196425254@qq.com
@@ -31,12 +30,12 @@ abstract class FunGameView extends View {
     static final int STATUS_GAME_FINISHED = 3;
 
     /**
-     * 分割线默认宽度大小
+     * Default width size of dividing line
      */
     static final float DIVIDING_LINE_SIZE = 1.f;
 
     /**
-     * 控件高度占屏幕高度比率
+     * Ratio of view height to screen height
      */
     static final float VIEW_HEIGHT_RATIO = .161f;
 
@@ -94,8 +93,8 @@ abstract class FunGameView extends View {
     protected abstract void resetConfigParams();
 
     /**
-     * 绘制分割线
-     * @param canvas 默认画布
+     * Draw dividing line
+     * @param canvas default canvas
      */
     private void drawBoundary(Canvas canvas) {
         mPaint.setColor(Color.parseColor("#606060"));
@@ -116,8 +115,8 @@ abstract class FunGameView extends View {
     }
 
     /**
-     * 绘制文字内容
-     * @param canvas 默认画布
+     * Draw text content
+     * @param canvas default canvas
      */
     private void drawText(Canvas canvas) {
         switch (status) {
@@ -138,9 +137,9 @@ abstract class FunGameView extends View {
     }
 
     /**
-     * 提示文字信息
-     * @param canvas 默认画布
-     * @param text 相关文字字符串
+     * Prompt text information
+     * @param canvas default canvas
+     * @param text relevant text string
      */
     private void promptText(Canvas canvas, String text) {
         float textX = (canvas.getWidth() - textPaint.measureText(text)) * .5f;
@@ -150,8 +149,8 @@ abstract class FunGameView extends View {
 
 
     /**
-     * 移动控制器（控制器对象为具体控件中的右边图像模型）
-     * @param distance 移动的距离
+     * Move controller (controller object is the right image model in the specific control)
+     * @param distance distance moved
      */
     public void moveController(float distance) {
         float maxDistance = (getMeasuredHeight() -  2 * DIVIDING_LINE_SIZE - controllerSize);
@@ -165,8 +164,8 @@ abstract class FunGameView extends View {
     }
 
     /**
-     * 移动控制器到起点位置
-     * @param duration
+     * Move controller to starting point
+     * @param duration duration
      */
     public void moveController2StartPoint(long duration) {
         ValueAnimator moveAnimator = ValueAnimator.ofFloat(controllerPosition, DIVIDING_LINE_SIZE);
@@ -183,8 +182,8 @@ abstract class FunGameView extends View {
     }
 
     /**
-     * 更新当前控件状态
-     * @param status 状态码
+     * Update current control status
+     * @param status status code
      */
     public void postStatus(int status) {
         this.status = status;
@@ -197,7 +196,7 @@ abstract class FunGameView extends View {
     }
 
     /**
-     * 获取当前控件状态
+     * Get current control status
      * @return
      */
     public int getCurrStatus() {
@@ -229,10 +228,10 @@ abstract class FunGameView extends View {
     }
 
     /**
-     * 获取屏幕尺寸
+     * Get screen size
      *
      * @param context context
-     * @return 手机屏幕尺寸
+     * @return mobile screen size
      */
     private DisplayMetrics getScreenMetrics(Context context) {
         WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);

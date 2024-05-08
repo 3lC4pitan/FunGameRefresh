@@ -18,99 +18,99 @@ import java.util.Random;
 public class BattleCityView extends FunGameView {
 
     /**
-     * 轨道数量
+     * Number of tracks
      */
     private static int TANK_ROW_NUM = 3;
 
     /**
-     * 炮管尺寸所在tank尺寸的比率
+     * Ratio of barrel size to tank size
      */
-    private static final float TANK_BARREL_RATIO = 1/3.f;
+    private static final float TANK_BARREL_RATIO = 1 / 3.f;
 
     /**
-     * 默认子弹之间空隙间距
+     * Default spacing between bullets
      */
     private static final int DEFAULT_BULLET_NUM_SPACING = 360;
 
     /**
-     * 默认敌方坦克之间间距
+     * Default spacing between enemy tanks
      */
     private static final int DEFAULT_ENEMY_TANK_NUM_SPACING = 60;
 
     /**
-     * 表示运行漏掉的敌方坦克总数量 和 升级后消灭坦克总数量的增量
+     * Total number of missed enemy tanks and the increment of total number of tanks destroyed after upgrading
      */
     private static final int DEFAULT_TANK_MAGIC_TOTAL_NUM = 8;
 
     /**
-     * 所有轨道上敌方坦克矩阵集合
+     * Collection of enemy tank matrices on all tracks
      */
     private SparseArray<Queue<RectF>> eTankSparseArray;
 
     /**
-     * 屏幕上所有子弹坐标点集合
+     * Collection of coordinates of all bullets on the screen
      */
     private Queue<Point> mBulletList;
 
     /**
-     * 击中敌方坦克的子弹坐标点
+     * Coordinates of the bullet hitting the enemy tank
      */
     private Point usedBullet;
 
     /**
-     * 用于随机定位一个轨道下标值
+     * Used to randomly position a track index
      */
     private Random random;
 
     /**
-     * 子弹半径
+     * Bullet radius
      */
     private float bulletRadius;
 
     /**
-     * 敌方坦克间距、子弹间距
+     * Spacing between enemy tanks and bullets
      */
     private int enemyTankSpace, bulletSpace;
 
     /**
-     * 炮筒尺寸
+     * Barrel size
      */
     private int barrelSize;
 
     /**
-     * 敌方坦克速度、子弹速度
+     * Enemy tank speed, bullet speed
      */
     private int enemySpeed = 2, bulletSpeed = 7;
 
     /**
-     * 当前前一辆敌方坦克和后一辆已经存在的间距值
-     * 用于确定是否要派出新的一辆敌方坦克
+     * Current offset between the previous and next existing enemy tank
+     * Used to determine whether to send out a new enemy tank
      */
     private int offsetETankX;
 
     /**
-     * 当前前一颗子弹和后一颗子弹的间距值
-     * 用于确定是否要发射新的一颗子弹
+     * Current offset between the previous and next bullet
+     * Used to determine whether to fire a new bullet
      */
-    private int  offsetMBulletX;
+    private int offsetMBulletX;
 
     /**
-     * 当前漏掉的坦克数量
+     * Current number of missed tanks
      */
     private int overstepNum;
 
     /**
-     * 当前难度等级需要消灭坦克数量
+     * Number of tanks to be destroyed in the current difficulty level
      */
     private int levelNum;
 
     /**
-     * 当前难度等级内消灭的敌方坦克数量
+     * Number of enemy tanks destroyed in the current difficulty level
      */
     private int wipeOutNum;
 
     /**
-     * 表示第一次标示值，用于添加第一辆敌方坦克逻辑
+     * First mark value, used to add logic to add the first enemy tank
      */
     private boolean once = true;
 
@@ -174,19 +174,21 @@ public class BattleCityView extends FunGameView {
     }
 
     /**
-     * 由index轨道下标从左边起始位置生成一个用于绘制敌方坦克的Rect
-     * @param index 轨道下标
-     * @return 敌方坦克矩阵
+     * Generate a Rect for drawing enemy tanks from the starting position on the left side based on the index track index
+     *
+     * @param index Track index
+     * @return Enemy tank matrix
      */
     private RectF generateEnemyTank(int index) {
-        float left = - (controllerSize + barrelSize);
+        float left = -(controllerSize + barrelSize);
         float top = index * (controllerSize + DIVIDING_LINE_SIZE) + DIVIDING_LINE_SIZE;
         return new RectF(left, top, left + barrelSize * 2.5f, top + controllerSize);
     }
 
     /**
-     * 绘制子弹路径
-     * @param canvas 默认画布
+     * Draw bullet path
+     *
+     * @param canvas Default canvas
      */
     private void makeBulletPath(Canvas canvas) {
         mPaint.setColor(mModelColor);
@@ -223,27 +225,29 @@ public class BattleCityView extends FunGameView {
     }
 
     /**
-     * 由Y坐标获取该坐标所在轨道的下标
-     * @param y 坐标Y值
-     * @return 轨道下标
+     * Get the track index based on the Y coordinate
+     *
+     * @param y Y coordinate value
+     * @return Track index
      */
     private int getTrackIndex(int y) {
         int index = y / (getMeasuredHeight() / TANK_ROW_NUM);
         index = index >= TANK_ROW_NUM ? TANK_ROW_NUM - 1 : index;
         index = index < 0 ? 0 : index;
-        return  index;
+        return index;
     }
 
     /**
-     * 判断是否消灭敌方坦克
-     * @param point 单签子弹坐标点
-     * @return 消灭：true, 反之：false
+     * Check if the bullet hits the enemy tank
+     *
+     * @param point Current bullet coordinate point
+     * @return Hit: true, otherwise: false
      */
     private boolean checkWipeOutETank(Point point) {
         boolean beHit = false;
         int trackIndex = getTrackIndex(point.y);
         RectF rectF = eTankSparseArray.get(trackIndex).peek();
-        if (rectF != null && rectF.contains(point.x, point.y)) { // 击中
+        if (rectF != null && rectF.contains(point.x, point.y)) {
             if (++wipeOutNum == levelNum) {
                 upLevel();
             }
@@ -254,7 +258,7 @@ public class BattleCityView extends FunGameView {
     }
 
     /**
-     * 难度升级
+     * Upgrade difficulty level
      */
     private void upLevel() {
         levelNum += DEFAULT_TANK_MAGIC_TOTAL_NUM;
@@ -263,16 +267,17 @@ public class BattleCityView extends FunGameView {
         wipeOutNum = 0;
 
         if (enemyTankSpace > 12)
-        enemyTankSpace -= 12;
+            enemyTankSpace -= 12;
 
         if (bulletSpace > 30)
-        bulletSpace -= 30;
+            bulletSpace -= 30;
     }
 
     /**
-     * 绘制子弹
-     * @param canvas 默认画布
-     * @param point 子弹圆心坐标点
+     * Draw bullet
+     *
+     * @param canvas Default canvas
+     * @param point  Bullet center coordinate point
      */
     private void drawBullet(Canvas canvas, Point point) {
         point.x -= bulletSpeed;
@@ -280,11 +285,12 @@ public class BattleCityView extends FunGameView {
     }
 
     /**
-     * 判断我方坦克是否与敌方坦克相撞
-     * @param index 轨道下标
-     * @param selfX 我方坦克所在坐标X值
-     * @param selfY 我方坦克矩阵的top 或者 bottom 值
-     * @return true：相撞，反之：false
+     * Check if our tank collides with enemy tanks
+     *
+     * @param index  Track index
+     * @param selfX  X coordinate value of our tank
+     * @param selfY  Top or bottom value of our tank matrix
+     * @return true: Collision, otherwise: false
      */
     private boolean checkTankCrash(int index, float selfX, float selfY) {
         boolean isCrash = false;
@@ -296,8 +302,9 @@ public class BattleCityView extends FunGameView {
     }
 
     /**
-     * 绘制我方坦克
-     * @param canvas 默认画布
+     * Draw our tank
+     *
+     * @param canvas Default canvas
      */
     private void drawSelfTank(Canvas canvas) {
         mPaint.setColor(rModelColor);
@@ -325,8 +332,9 @@ public class BattleCityView extends FunGameView {
     }
 
     /**
-     * 绘制三条轨道上的敌方坦克
-     * @param canvas 默认画布
+     * Draw enemy tanks on three tracks
+     *
+     * @param canvas Default canvas
      */
     private void drawEnemyTank(Canvas canvas) {
         mPaint.setColor(lModelColor);
@@ -367,9 +375,10 @@ public class BattleCityView extends FunGameView {
     }
 
     /**
-     * 绘制一辆敌方坦克
-     * @param canvas 默认画布
-     * @param rectF 坦克矩阵
+     * Draw a single enemy tank
+     *
+     * @param canvas Default canvas
+     * @param rectF  Tank matrix
      */
     private void drawTank(Canvas canvas, RectF rectF) {
         rectF.set(rectF.left + enemySpeed, rectF.top, rectF.right + enemySpeed, rectF.bottom);
@@ -380,8 +389,9 @@ public class BattleCityView extends FunGameView {
     }
 
     /**
-     * 随机定位一个轨道下标值
-     * @return 轨道下标
+     * Randomly position a track index
+     *
+     * @return Track index
      */
     private int apperanceOption() {
         return random.nextInt(TANK_ROW_NUM);
